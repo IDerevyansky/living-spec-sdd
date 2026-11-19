@@ -1,0 +1,16 @@
+# Rename to CODEOWNERS when a second person joins.
+# The last matching pattern wins. Replace the handles with real ones.
+
+# Project owner: rules, core, tools, CI
+*                       @project-owner
+/core/                  @project-owner
+/AGENTS.md              @project-owner
+/living-spec.json       @project-owner
+/tools/                 @project-owner
+/.github/               @project-owner
+/docs/workflow/         @project-owner
+/docs/prompts/          @project-owner
+
+# Area owners: their living specs and requirements
+# /specs/billing/                 @billing-owner
+# /core/requirements/billing.md   @billing-owner

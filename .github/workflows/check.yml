@@ -1,0 +1,37 @@
+name: check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  merge_group:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Spec check
+        run: python tools/spec_check.py
+
+      - name: Tool tests
+        run: python -m unittest discover -s tools/tests -t . -v
+
+      - name: Project tests
+        run: python -m unittest discover -s tests -t . -v || [ $? -eq 5 ]  # 5 = no tests yet
+
+      - name: Pull request guard
+        if: github.event_name == 'pull_request'
+        env:
+          LSDD_PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        run: python tools/guard.py --base "origin/${{ github.base_ref }}"
