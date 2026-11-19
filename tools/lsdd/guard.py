@@ -62,7 +62,11 @@ def evaluate(diff: Diff, labels: list[str], config: dict) -> tuple[str, Report]:
 
     code_globs = config.get("code_globs", [])
     changes_dir = config.get("changes_dir", "changes").rstrip("/") + "/"
-    touches_code = any(matches_any(path, code_globs) for path in diff.changed)
+    test_globs = config.get("test_globs", [])
+    # Tests often live inside code folders (packages/x/tests/): they are not code.
+    touches_code = any(
+        matches_any(path, code_globs) and not matches_any(path, test_globs) for path in diff.changed
+    )
     touches_change = any(path.startswith(changes_dir) for path in diff.changed)
     if touches_code and not touches_change:
         report.error("pull request", "code changed but no change folder was touched: every code change belongs to a change in changes/")
