@@ -51,6 +51,13 @@ class GuardTests(unittest.TestCase):
         _, report = evaluate(diff(["tests/test_a.py", "src/a.py", TASKS], task_lines=TICK_TEST), [], CONFIG)
         self.assertTrue(any("[TEST] pull request must not change product code" in e for e in report.errors))
 
+    def test_tests_inside_code_folders_are_not_code(self):
+        changed = ["packages/core/tests/test_a.py", "src/web/a.test.ts", TASKS]
+        _, report = evaluate(diff(changed, task_lines=TICK_TEST), [], CONFIG)
+        self.assertEqual(report.errors, [])
+        _, report = evaluate(diff(["packages/core/tests/test_a.py"]), ["test"], CONFIG)
+        self.assertEqual(report.errors, [])
+
     def test_docs_pull_request_is_fine(self):
         kind, report = evaluate(diff(["README.md"]), ["docs"], CONFIG)
         self.assertEqual(kind, "docs")
